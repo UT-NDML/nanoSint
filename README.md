@@ -33,7 +33,7 @@ sbatch indiBatch
 ### Post Processing Scripts
 Imaging is done in parallel with the plot_2by2.py and in series with import_auto_fromdat.py the size of the bed is set in the script with the xsize, ysize and zsize parameters. The naming convention used for reading into the file is also set in the script. Analysis is done with the limanalys.py script (in parallel) or analysis_fromdat.py (single core). In TACC procdevBatch used to run the python scripts.
 
-* plot_2by2
+* plot_2by2 
   * command line inputs:
     * zsize, ysize, xsize --> simulation box dimensions
     * SNo --> serial number tag used in naming convention for files
@@ -41,10 +41,13 @@ Imaging is done in parallel with the plot_2by2.py and in series with import_auto
     * filed --> step distance between files (default 50)
     * sizep --> number of processors to use in analysis
     * simzoom --> sets whether to plot whole bed (1), just center box (2) or both (3)
-
-*limanalys
-
-command line inputs are the same as for the plots above with the exception of the simzoom input
-
-
-
+  * Output is the png image files
+  
+* limanalys 
+  * command line inputs are the same as for the plots above with the exception of the simzoom input
+  * additional variables used to set parallelization. List includes directories to navigate to as well as the corresponding box dimensions for the beds in each directory. Also includes the analysis box dimensions defined in the xvec and yvec lists
+  * Output are text files with the results of the analysis. The output results are then sent into the calibration scripts
+  
+* TACCtimecalibplot_R2error_withFitting
+  * performs the calibration using the analysis results. The calibration is done within fitting of temperature bands defined in the AllCoeficients files. These files should be in the same directory as python script when run.
+  * In file settings *bedList* defines the list of directories containing the analysis files. Modifications should correspond to the SNo variable that sets the file naming. xbd and ybd also affect the file naming. These correspond to the file analysis boxes

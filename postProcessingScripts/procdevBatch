@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH -J procs         # Job name
+#SBATCH -o proc.%j.out   # stdout; %j expands to jobid
+#SBATCH -e proc.%j.err   # stderr; skip to combine stdout and stderr
+#SBATCH -p skx-dev   # queue
+#SBATCH -N 1           # Number of nodes, not cores (64 cores/node)
+#SBATCH -A Modeling-of-Microsca         # Project Allocation
+#SBATCH -n 48            # Total number of MPI tasks (if omitted, n=N)
+#SBATCH -t 02:00:00       # max time
+
+#SBATCH --mail-user=ogodibua@yahoo.co.uk
+#SBATCH --mail-type=ALL
+
+python limanalys.py 192 192 52 504040295 0 33000 50 48
+
+cd bed5
+
+python ../plot_2by2.py 192 192 66 504 0 33000 50 48 3

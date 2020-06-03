@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#SBATCH -J Tempmultibed         # Job name
+#SBATCH -o Tempmultibed.log   # stdout; %j expands to jobid
+#SBATCH -e bed.%j.err   # stderr; skip to combine stdout and stderr
+#SBATCH -p normal   # queue
+#SBATCH -N 11           # Number of nodes, not cores (64 cores/node)
+#SBATCH -A Modeling-of-Microsca         # Project Allocation
+#SBATCH -n 676            # Total number of MPI tasks (if omitted, n=N)
+#SBATCH -t 48:00:00       # max time
+
+#SBATCH --mail-user=ogodibua@yahoo.co.uk
+#SBATCH --mail-type=ALL
+
+ibrun -np 676 ./sim 58 94

@@ -33,16 +33,14 @@ sbatch indiBatch
 ### Post Processing Scripts
 Imaging is done in parallel with the plot_2by2.py and in series with import_auto_fromdat.py the size of the bed is set in the script with the xsize, ysize and zsize parameters. The naming convention used for reading into the file is also set in the script. Analysis is done with the limanalys.py script (in parallel) or analysis_fromdat.py (single core). In TACC procdevBatch used to run the python scripts.
 
-*plot_2by2
-
-command line inputs:
-
-** zsize, ysize, xsize --> simulation box dimensions
-** SNo --> serial number tag used in naming convention for files
-** minfile, maxfile --> start and end file numbers for the span of files to plot
-** filed --> step distance between files (default 50)
-** sizep --> number of processors to use in analysis
-** simzoom --> sets whether to plot whole bed (1), just center box (2) or both (3)
+* plot_2by2
+  * command line inputs:
+    * zsize, ysize, xsize --> simulation box dimensions
+    * SNo --> serial number tag used in naming convention for files
+    * minfile, maxfile --> start and end file numbers for the span of files to plot
+    * filed --> step distance between files (default 50)
+    * sizep --> number of processors to use in analysis
+    * simzoom --> sets whether to plot whole bed (1), just center box (2) or both (3)
 
 *limanalys
 

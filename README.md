@@ -1,13 +1,13 @@
 # nanoSint 
 This repository contains scripts related to modelling the diffusion process between nanoparticles. The diffusion between particles is tracked using a Phase Field Modelling (PFM) approach. These simulations use density and crystal order parameters as the phase field variables, tracking the diffusion process through the temporal evolution of the phase field variables. Evolution of the density variable is governed with the Cahn-Hilliard equation and the order parameter with the Landau-Gizburg equation. 
 
-# Code breakdown
+## Code breakdown
 The scripts used for these simulations are divided into three major categories, the pre-processing bedGeneration scripts, the sintering simulation scripts, and the post-processing imaging and analysis scripts.
 
-## Bed Generation Scripts
+### Bed Generation Scripts
 The bed generation scripts 
 
-## Sintering Simulation Scripts
+### Sintering Simulation Scripts
 Parallel scripts run on TACC and have been tested with impi on TACC and openmpi on a regular desktop computer. 
 
 Compilation
@@ -30,6 +30,23 @@ On TACC the simulations are run with a batchScript (indiBatch) which defines the
 
 sbatch indiBatch
 
-## Post Processing Scripts
-Imaging is done in parallel with the plot_2by2.py and in series with import_auto_fromdat.py the size of the bed is set in the script with the xsize, ysize and zsize parameters. The naming convention used for reading into the file is also set in the script. Analysis is done with the limanalys.py script.
+### Post Processing Scripts
+Imaging is done in parallel with the plot_2by2.py and in series with import_auto_fromdat.py the size of the bed is set in the script with the xsize, ysize and zsize parameters. The naming convention used for reading into the file is also set in the script. Analysis is done with the limanalys.py script (in parallel) or analysis_fromdat.py (single core). In TACC procdevBatch used to run the python scripts.
+
+*plot_2by2
+
+command line inputs:
+
+** zsize, ysize, xsize --> simulation box dimensions
+** SNo --> serial number tag used in naming convention for files
+** minfile, maxfile --> start and end file numbers for the span of files to plot
+** filed --> step distance between files (default 50)
+** sizep --> number of processors to use in analysis
+** simzoom --> sets whether to plot whole bed (1), just center box (2) or both (3)
+
+*limanalys
+
+command line inputs are the same as for the plots above with the exception of the simzoom input
+
+
 

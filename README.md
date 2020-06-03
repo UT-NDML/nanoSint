@@ -12,11 +12,12 @@ Parallel scripts run on TACC and have been tested with impi on TACC and openmpi 
 
 Compilation
 
-mpicxx -O3 scriptName.cpp
+_**mpicxx -O3 scriptName.cpp**_
 
 Running
 <on TACC with 64 processors>
-ibrun -np 64 ./a.out noP height
+
+_**ibrun -np 64 ./a.out noP height**_
 
 noP is the number of particles in the simulation bed and height is the height of the simulation box. For a single layer simulation the scriptName is singleLayer.cpp and there must be a bed.txt file in the same directory which contains the information for particles in the bed in the format of:
 
@@ -28,7 +29,7 @@ For multiple layers multiLayer.cpp simulates the sintering of more than one laye
 
 On TACC the simulations are run with a batchScript (indiBatch) which defines the queue to run the simulation in, as well as the numper of processors and nodes to use in the simulation. The running procedure:
 
-sbatch indiBatch
+_**sbatch indiBatch**_
 
 ### Post Processing Scripts
 Imaging is done in parallel with the plot_2by2.py and in series with import_auto_fromdat.py the size of the bed is set in the script with the xsize, ysize and zsize parameters. The naming convention used for reading into the file is also set in the script. Analysis is done with the limanalys.py script (in parallel) or analysis_fromdat.py (single core). In TACC procdevBatch used to run the python scripts.

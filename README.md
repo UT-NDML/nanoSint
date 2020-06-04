@@ -58,17 +58,23 @@ Imaging is done in parallel with the plot_2by2.py and in series with import_auto
 
 ### Run Procedure Summarized
 #### Single Layer 1by1 beds
-* ./bashModGen (feedbash must be in directory) **bedGenerationScripts/singleLayerGeneration**
-* ./gatherforTACC **bedGenerationScripts/singleLayerGeneration/postProcess**
-* Copy <ForTACC> to TACC
+* ./bashModGen (feedbash must be in directory) 
+  * folder --> **bedGenerationScripts/singleLayerGeneration**
+* ./gatherforTACC 
+  * folder --> **bedGenerationScripts/singleLayerGeneration/postProcess**
+* Copy [ForTACC] to TACC
 * [on TACC --> stampede2] ./batchAuto2 (batchScript must be in directory)
+  * folder --> **SinteringSimulationScripts**
 * [on TACC --> stampede2] ./batchCollect
-* Copy <SendFromTACC> to desktop
+* Copy [SendFromTACC] to desktop
 * run plotandbounds.py (in same directory as <SendFromTACC>)
-* Copy <BoundsInfo> to TACC
-* [on TACC --> stampede] ./BoundsScatter or ./RandBoundsScatter (if a lot of bounds ~> 30 in a bed)…Make sure * to load the right python version (module r pythonModules)
+  * folder --> **postProcessingScripts**
+* Copy [BoundsInfo] to TACC
+* [on TACC --> stampede] ./BoundsScatter or ./RandBoundsScatter (if a lot of bounds ~> 30 in a bed)…Make sure to load the right python version (module r pythonModules)
+  * folder --> **SinteringSimulationScripts**
 * [on TACC --> stampede] python TACC_analysisANDcalibpar.py
+  * folder --> **postProcessingScripts**
 * [on TACC --> stampede] ./bashExtract
-* Copy <ExtractInfo> to desktop
+* Copy [ExtractInfo] to desktop
 * run collateEXTinfo.py (in same directory as <ExtractInfo>)
 

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+bdsDir="BoundsInfo"
+bdsName="BoundstoUse.txt"
+filename="AllBounds.txt"
+
+if [ -e $filename ]; then
+	rm $filename
+fi
+
+touch $filename
+
+jjk=`cat TACCguide.log | wc -l`
+jjk=$(($jjk-1))
+
+for ctr in `seq 0 $jjk`;
+do
+	dirname="bed$ctr"
+	pathfrom="$bdsDir/$dirname"
+	
+	cd $dirname
+	pwd
+
+	if [ -e rho40800SN50400002.dat ]
+	then 
+		cp ../$pathfrom/$bdsName .
+	
+		noLines=`wc -l ../$pathfrom/$bdsName | awk '{print $1}'`
+		for lin in `seq 1 $noLines`; do echo $ctr `sed -n "$lin"p ../$pathfrom/$bdsName` >> ../$filename; done		
+	fi
+		
+	cd .. 
+done

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+ctr=0
+ctc=0
+
+mpicxx -O3 -o sim bedsim.cpp
+
+for bc in `cat TACCguide.log`;
+do
+
+	if [ $(($ctc%2)) -eq 0 ];
+	then
+		NOP=$bc
+	else
+		height=$(($bc+2))
+		dirname="bed$ctr"
+		
+		cd $dirname
+		pwd
+
+		sbatch ../batchScript $NOP $height 
+		
+		ctr=$(($ctr+1))
+		
+		cd ..
+	fi
+
+	ctc=$(($ctc+1))	 
+done

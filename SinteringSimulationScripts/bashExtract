@@ -1,0 +1,58 @@
+#!/bin/bash
+
+extDir="ExtractInfo0422"
+
+jjk=`cat TACCguide.log | wc -l`
+jjk=$(($jjk-1))
+
+if [ -e $extDir ]; then
+	rm -r $extDir
+fi
+
+mkdir $extDir
+
+for ctr in `seq 0 $jjk`;
+do
+	dirname="bed$ctr"
+	pathSend="$extDir/$dirname"
+	
+	mkdir $pathSend	
+	cd $dirname
+	pwd
+
+	if [ -e rho40800SN50400002.dat ]
+	then
+
+		filfl="Extractbed.txt"
+
+		resk=`find . -name '*SN50400002datafullbox*' | wc -l`
+		ress=`find . -name '*SN50400002datafullbox*' | sed 's/\.\///'`
+
+		if [ -e $filfl ]
+		then
+        		rm $filfl
+		fi
+
+		touch $filfl
+
+		for ii in `seq 1 $resk`;
+		do
+        		txtfil=`echo $ress | awk -v ii="$ii" '{print $ii}'`
+
+        		klk=`tail -1 $txtfil | awk '{print $1}'`
+
+        		if [ $klk -lt 50 ]
+        		then
+                		extrct=`tail -1 $txtfil`
+                		echo $extrct >> $filfl
+        		fi
+		done
+	
+        	find . -name '*SN50400002datafullbox*' -exec mv -t ../$pathSend '{}' +
+        	mv $filfl ../$pathSend
+	fi
+
+	cd .. 
+done
+
+

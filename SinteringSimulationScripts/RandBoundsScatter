@@ -1,0 +1,56 @@
+#!/bin/bash
+
+bdsDir="BoundsInfo3"
+bdsName="BoundstoUse.txt"
+filename="AllBounds3.txt"
+
+maxinDir=20
+mark=3
+
+if [ -e $filename ]; then
+	rm $filename
+fi
+
+touch $filename
+
+jjk=`cat TACCguide.log | wc -l`
+jjk=$(($jjk-1))
+
+for ctr in `seq 0 $jjk`;
+do
+	dirname="bed$ctr"
+	pathfrom="$bdsDir/$dirname"
+	
+	cd $dirname
+	pwd
+
+	if [ -e rho24000SN504.dat ]
+	then 
+		cp ../$pathfrom/$bdsName ./BoundstoUse$mark.txt
+	
+		noLines=`wc -l ../$pathfrom/$bdsName | awk '{print $1}'`
+		if [ $noLines -le $maxinDir ]; then
+			for lin in `seq 1 $noLines`; do echo $ctr `sed -n "$lin"p ../$pathfrom/$bdsName` >> ../$filename; done	
+		else
+			for lin in `seq 0 $(($maxinDir-1))`; 
+			do
+                                rand=$(( 1 + ( RANDOM % $noLines ) ))
+
+				if [ $lin -eq 0 ]; then
+					rand=$(( 1 + ( RANDOM % $noLines ) ))
+				else
+					while [[ " ${array[@]} " =~ " $rand " ]];
+					do
+                                		rand=$(( 1 + ( RANDOM % $noLines ) ))
+					done
+				fi
+				#echo random number = $rand
+				echo $ctr `sed -n "$rand"p ../$pathfrom/$bdsName` >> ../$filename
+											 
+				array[$lin]=$rand
+			done
+		fi		
+	fi
+		
+	cd .. 
+done

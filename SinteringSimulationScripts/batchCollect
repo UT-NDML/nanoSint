@@ -1,0 +1,28 @@
+#!/bin/bash
+
+sendDir="SendFromTACC"
+
+jjk=`cat TACCguide.log | wc -l`
+jjk=$(($jjk-1))
+
+mkdir $sendDir
+
+cp TACCguide.log $sendDir
+
+for ctr in `seq 0 $jjk`;
+do
+	dirname="bed$ctr"
+	pathSend="$sendDir/$dirname"
+	
+	mkdir $pathSend	
+	cd $dirname
+	pwd
+
+	if [ -e rho40800SN50400002.dat ]
+	then
+		cp rho0SN50400002.dat ../$pathSend
+		cp rho40800SN50400002.dat ../$pathSend
+	fi
+		
+	cd .. 
+done

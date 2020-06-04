@@ -1,0 +1,55 @@
+#!/bin/bash
+
+zmax=1.6 #zmax value used
+nofarm=5 #number of terminals to spawn at a time
+dirto="zmax_$zmax"
+slpt=90 #time (in minutes) to give terminals to work on bedgeneration
+
+noBlow=1
+noBhigh=10
+
+cd $dirto
+
+icc=0
+for noB in `seq $noBlow $noBhigh`;
+do
+	dirname="noB_$noB"
+	cd $dirname
+	
+	pwd
+
+	ic=0
+
+	for NOP in `cat ParticleInfo.log`;
+	do
+		dirname="bedgen_$ic"
+		outname="outfileBed$ic.log"
+		echo $dirname
+		cd $dirname
+
+		cp ../../../Sparse10/ASurfacePoints10.txt .
+		if [ $(($icc/$nofarm)) -eq 0 ];
+		then
+			gnome-terminal -- ../.././feedbash $NOP $outname
+		else
+			if [ $(($icc%$nofarm)) -eq 0 ];
+			then
+				echo "Sleeping for $slpt minutes"
+				sleep $(($slpt))m
+				gnome-terminal -- ../.././feedbash $NOP $outname
+			else
+				gnome-terminal -- ../.././feedbash $NOP $outname
+			fi
+		fi
+
+		cd ..
+
+		ic=$(($ic+1))
+		icc=$(($icc+1))
+	done
+
+
+	cd ..
+done 
+
+

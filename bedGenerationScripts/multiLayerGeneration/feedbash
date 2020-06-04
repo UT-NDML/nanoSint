@@ -1,0 +1,8 @@
+#!/bin/bash
+
+NOP=$1
+outname=$2
+
+../.././gens10_res0.99 $NOP > $outname
+#python ../../extractBedInfo.py
+

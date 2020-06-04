@@ -1,0 +1,57 @@
+#!/bin/bash
+
+NOBEDS=30 #number of beds to make
+dirto="bedplay"
+dirTACC="ForTACC"
+dirSEND="ToSend"
+pathSEND="../../$dirSEND"
+
+mkdir $dirTACC
+mkdir $dirSEND
+cd $dirto
+
+ctt=0
+
+for ic in `seq 1 $NOBEDS`;
+do
+	dirname="bedgen$ic"
+	cd $dirname
+	
+	echo $dirname
+
+	mkdir $pathSEND/$dirname
+	cp bedInfo.txt $pathSEND/$dirname
+	cp "outfileBed$ic.log" $pathSEND/$dirname
+	cp particleOut800.txt $pathSEND/$dirname
+	cp particleOut900.txt $pathSEND/$dirname
+	cp particleOut1000.txt $pathSEND/$dirname
+	cp particle_input.txt $pathSEND/$dirname
+        cp bedImage.png $pathSEND/$dirname
+
+	if [ -e bed.txt ];
+	then
+		cp bed.txt $pathSEND/$dirname
+		cp bedguide.txt $pathSEND/$dirname
+
+		dirmake="bed$ctt"
+		mkdir ../../$dirTACC/$dirmake
+		cp bed.txt ../../$dirTACC/$dirmake
+		
+		if [ $ctt -eq 0 ];
+		then
+			echo `cat bedguide.txt` > ../../$dirTACC/TACCguide.log
+		else
+			echo `cat bedguide.txt` >> ../../$dirTACC/TACCguide.log
+		fi
+		
+		ctt=$(($ctt+1))
+	fi
+
+	cd ..
+done
+
+	
+
+	
+	
+	

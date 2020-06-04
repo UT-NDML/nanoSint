@@ -1,0 +1,60 @@
+#!/bin/bash
+
+NOBEDS=30 #number of beds to make
+nofarm=6 #number of terminals to spawn at a time
+dirto="bedplay"
+slpt=200
+
+mkdir $dirto
+cd $dirto
+
+for ic in `seq 1 $NOBEDS`;
+do
+	dirname="bedgen$ic"
+	mkdir $dirname
+	cd $dirname
+	python ../../lognormal_gen.py 2 2 0.8 0 0 1 9
+	noP=`wc -l particle_input.txt | grep -oE '^...'`
+	cd ..
+
+	if [ $ic -eq 1 ]; 
+	then
+		echo $noP > ParticleInfo.log
+	else
+                echo $noP >> ParticleInfo.log
+	fi
+done
+
+cd ..
+g++ -O3 -o gen3 bedgen.cpp
+
+cd $dirto
+
+ic=0
+
+for NOP in `cat ParticleInfo.log`;
+do
+	icn=$(($ic+1))
+        dirname="bedgen$icn"
+	outname="outfileBed$icn.log"
+	echo $dirname
+        cd $dirname
+
+	if [ $(($ic/$nofarm)) -eq 0 ];
+	then 
+		gnome-terminal -x ../.././feedbash $NOP $outname
+	else
+		if [ $(($ic%$nofarm)) -eq 0 ];
+		then
+			echo "Sleeping for $slpt minutes"
+			sleep $(($slpt))m
+			gnome-terminal -x ../.././feedbash $NOP $outname
+		else
+			gnome-terminal -x ../.././feedbash $NOP $outname
+		fi
+	fi
+			
+        cd ..
+
+        ic=$(($ic+1))
+done

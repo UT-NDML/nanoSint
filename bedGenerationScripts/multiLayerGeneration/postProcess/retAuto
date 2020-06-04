@@ -1,0 +1,43 @@
+#!/bin/bash
+
+zmax=1.6 #zmax value used
+
+noBlow=1
+noBhigh=10
+
+oldir="zmax_$zmax"
+newdir="Res_zmax_$zmax"
+
+mkdir $newdir
+
+cp AllDirsLog.txt $newdir
+
+for noB in `seq $noBlow $noBhigh`;
+do
+	dirname="noB_$noB"
+	cd $dirname
+	
+	pwd
+
+	ic=0
+
+	mkdir ../$newdir/$dirname
+
+	for NOP in `cat ParticleInfo.log`;
+	do
+		dirname2="bedgen_$ic"
+		
+		echo $dirname2
+		cd $dirname2
+
+		mkdir ../../$newdir/$dirname/$dirname2
+
+		cp *png OverlapInfoNew2.txt log.txt outfileBed* particleOut1000.txt ../../$newdir/$dirname/$dirname2	
+
+		ic=$(($ic+1))
+		
+		cd ..
+	done
+
+	cd ..
+done 

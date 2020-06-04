@@ -56,8 +56,8 @@ Imaging is done in parallel with the plot_2by2.py and in series with import_auto
   * performs the calibration using the analysis results. The calibration is done within fitting of temperature bands defined in the AllCoeficients files. These files should be in the same directory as python script when run.
   * In file settings *bedList* defines the list of directories containing the analysis files. Modifications should correspond to the SNo variable that sets the file naming. xbd and ybd also affect the file naming. These correspond to the file analysis boxes
 
-### Run Procedure Summarized
-#### Single Layer 1by1 beds
+## Run Procedure Summarized
+### Single Layer 1by1 beds
 * ./bashModGen (feedbash must be in directory) 
   * folder --> **bedGenerationScripts/singleLayerGeneration**
 * ./gatherforTACC 

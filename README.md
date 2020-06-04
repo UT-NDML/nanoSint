@@ -5,7 +5,10 @@ This repository contains scripts related to modelling the diffusion process betw
 The scripts used for these simulations are divided into three major categories, the pre-processing bedGeneration scripts, the sintering simulation scripts, and the post-processing imaging and analysis scripts.
 
 ### Bed Generation Scripts
-The bed generation scripts 
+The bed generation scripts are broken down into two groups, single and multiple layer bed generations. The folders contain all scripts required for generating the particles in the bed. This uses DEM to model the collision between particles with a linear spring-dashpot model. The DEM collision scripts are written in c++. Lognormal generation scripts are used to initialize the particle interactions. These scripts randomly position the spheres into a simulation box having diameters that follow the lognormal distribution of the nanoparticles in the ink being modelled. The lognormal particle distribution scripts are written in python. Multiple layer bed generation is different in that the bottom layer is extracted from the sintering simulation and interactions for the top layers include the particle-wall collisions as well as the collisions between the particles and the bottom layer. The surface of the bottom layer is extracted from the density rho files using the python scripts in *multiLayerGeneration/preProcess* folder.
+
+### Temperature Gradient Scripts
+This folder contains the scripts involved in setting up the files required for sintering with a temperature gradient. The temperatureProfile.py file is used to setup the profile in the data file tempProfile.dat used to initialize the multiLayerTemperature.cpp file. plotFromdat.py plots the pixels in arrays for the temperatures in the profile, it is used as a check to confirm the plot of the files created from the sintering simulation.
 
 ### Sintering Simulation Scripts
 Parallel scripts run on TACC and have been tested with impi on TACC and openmpi on a regular desktop computer. 
@@ -52,3 +55,20 @@ Imaging is done in parallel with the plot_2by2.py and in series with import_auto
 * TACCtimecalibplot_R2error_withFitting
   * performs the calibration using the analysis results. The calibration is done within fitting of temperature bands defined in the AllCoeficients files. These files should be in the same directory as python script when run.
   * In file settings *bedList* defines the list of directories containing the analysis files. Modifications should correspond to the SNo variable that sets the file naming. xbd and ybd also affect the file naming. These correspond to the file analysis boxes
+
+### Run Procedure Summarized
+#### Single Layer 1by1 beds
+* ./bashModGen (feedbash must be in directory) **bedGenerationScripts/singleLayerGeneration**
+* ./gatherforTACC **bedGenerationScripts/singleLayerGeneration/postProcess**
+* Copy <ForTACC> to TACC
+* [on TACC --> stampede2] ./batchAuto2 (batchScript must be in directory)
+* [on TACC --> stampede2] ./batchCollect
+* Copy <SendFromTACC> to desktop
+* run plotandbounds.py (in same directory as <SendFromTACC>)
+* Copy <BoundsInfo> to TACC
+* [on TACC --> stampede] ./BoundsScatter or ./RandBoundsScatter (if a lot of bounds ~> 30 in a bed)…Make sure * to load the right python version (module r pythonModules)
+* [on TACC --> stampede] python TACC_analysisANDcalibpar.py
+* [on TACC --> stampede] ./bashExtract
+* Copy <ExtractInfo> to desktop
+* run collateEXTinfo.py (in same directory as <ExtractInfo>)
+

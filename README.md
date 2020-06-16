@@ -10,7 +10,7 @@ The bed generation scripts are broken down into two groups, single and multiple 
 This folder contains the scripts involved in setting up the files required for sintering with a temperature gradient. The temperatureProfile.py file is used to setup the profile in the data file tempProfile.dat used to initialize the multiLayerTemperature.cpp file. plotFromdat.py plots the pixels in arrays for the temperatures in the profile, it is used as a check to confirm the plot of the files created from the sintering simulation.
 
 ## Sintering Simulation Scripts
-Parallel scripts run on TACC and have been tested with impi on TACC and openmpi on a regular desktop computer. 
+Parallel scripts run on stampede2 and have been tested with impi on stampede2 and openmpi on a regular desktop computer. 
 
 Compilation
 

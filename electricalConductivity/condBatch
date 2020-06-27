@@ -25,14 +25,14 @@ do
 	then
                 ngspice -b $nodeX > spiceOutX.txt
                 ngspice -b $nodeY > spiceOutY.txt
-        	echo $ai $(python3 spiceSing.py) >> $resData
+        	echo $ai $(python3 spicePost.py 1) >> $resData
 	else	 
 		python3 conductivityCalculations.py $ai > $outName
 		cp nodeFileX.cir $nodeX
         	cp nodeFileY.cir $nodeY 
 		ngspice -b nodeFileX.cir > spiceOutX.txt
 		ngspice -b nodeFileY.cir > spiceOutY.txt
-		echo $ai $(python3 spicePost.py) >> $resData 
+		echo $ai $(python3 spicePost.py 1) >> $resData 
 		rm nodeFileX.cir nodeFileY.cir
 	fi
 

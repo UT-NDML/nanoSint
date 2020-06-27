@@ -1,3 +1,7 @@
+from sys import argv
+
+resP = int(argv[1])
+
 R = []
 
 ctStart = 0
@@ -30,4 +34,5 @@ V = eval(iline[1])
 I = eval(iline[2])
 R.append(abs(V/I))     
 
-print(max(R)) 
+if not resP: print(max(R)) 
+else: print(R[0],R[1])

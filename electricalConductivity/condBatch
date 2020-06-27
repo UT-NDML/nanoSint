@@ -1,0 +1,41 @@
+#!/bin/bash
+
+AIlist=( 0 2 4 6 8 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200 400 600 800 1000 1400 2000 2400 3000 3400 4000 )
+
+SNo=50400002
+
+resData='XYresData.txt'
+
+if [ -e $resData ]
+then
+	echo removing $resData
+	rm $resData
+fi
+touch $resData
+
+for ai in "${AIlist[@]}"
+do
+	fill='fullT'$ai'SN'$SNo'.dat'
+	outName='fullT'$ai'Out.log'
+	
+	nodeX='nodeFileX_T'$ai'.cir'
+	nodeY='nodeFileY_T'$ai'.cir'
+
+	if [ -e $nodeX ]
+	then
+                ngspice -b $nodeX > spiceOutX.txt
+                ngspice -b $nodeY > spiceOutY.txt
+        	echo $ai $(python3 spiceSing.py) >> $resData
+	else	 
+		python3 conductivityCalculations.py $ai > $outName
+		cp nodeFileX.cir $nodeX
+        	cp nodeFileY.cir $nodeY 
+		ngspice -b nodeFileX.cir > spiceOutX.txt
+		ngspice -b nodeFileY.cir > spiceOutY.txt
+		echo $ai $(python3 spicePost.py) >> $resData 
+		rm nodeFileX.cir nodeFileY.cir
+	fi
+
+	echo $fill done
+
+done

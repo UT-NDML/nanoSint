@@ -55,6 +55,11 @@ Imaging is done in parallel with the plot_2by2.py and in series with import_auto
   * performs the calibration using the analysis results. The calibration is done within fitting of temperature bands defined in the AllCoeficients files. These files should be in the same directory as python script when run.
   * In file settings *bedList* defines the list of directories containing the analysis files. Modifications should correspond to the SNo variable that sets the file naming. xbd and ybd also affect the file naming. These correspond to the file analysis boxes
 
+## Electrical Conductivity
+Electrical conductivity measures are done on the simulation beds. *conductivityCalculations.py* isolates the neck between particles in contacts and uses the Reimann-Weber formula to get the electrical resistance between the particles in contact. Run the bast script _**condBatch**_ with the fullT file scripts in the directory. Ngspice is used to calculate the resistance. This is installed with:
+
+sudo apt-get install -y ngspice
+
 # Run Procedure Summarized
 ## Single Layer 1by1 beds
 * ./bashModGen (feedbash must be in directory) 

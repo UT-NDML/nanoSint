@@ -1,0 +1,15 @@
+#!/bin/bash
+
+vfile='VoltageFile.txt'
+nfile='nodeFile.txt'
+outfile='nodeFile.cir'
+
+echo > spiceOut.txt
+
+while read line;
+do
+	echo Effective Resistance Circuit > $outfile
+	echo $line >> $outfile
+	cat $nfile >> $outfile
+	ngspice -b $outfile >> spiceOut.txt
+done < $vfile

@@ -5,6 +5,7 @@ import struct
 import time
 import math as m
 from sys import argv
+from os.path import isfile
 
 #%%
 def makeSphere(xC,yC,zC,R):
@@ -430,10 +431,22 @@ def calcRes(r0,r1,rN,L):
     A = m.pi*rN*rN
     return res*L*Sconv/A 
 
-def writeNodeList(nodeList,fileName,Vdc = 15, Vn1 = 0, Vn2 = 1):
+#%%
+def writeNodeList(nodeList,fileName,Vn1,Vn2,Vdc = 15):
+    
+    #fill.write('Effective Resistance Circuit\n')
+
+    filv = open('VoltageFile.txt','w')
+    for ix in Vn1[0]:
+        for iy in Vn1[1]:
+            filv.write('V1 %d %d dc %d\n' %(ix,iy,Vdc))
+    for ix in Vn2[0]:
+        for iy in Vn2[1]:
+            filv.write('V1 %d %d dc %d\n' %(ix,iy,Vdc))
+    filv.close()
+       
+    #fill.write('V1 %d %d dc %d\n' %(Vn1,Vn2,Vdc))
     fill = open(fileName,'w')
-    fill.write('Effective Resistance Circuit\n')
-    fill.write('V1 %d %d dc %d\n' %(Vn1,Vn2,Vdc))
     for ct, res in enumerate(nodeList[2]):
         rt = 'R'+str(ct+1)
         fill.write('%s %d %d %f\n' %(rt,nodeList[0][ct],nodeList[1][ct],res))
@@ -441,6 +454,42 @@ def writeNodeList(nodeList,fileName,Vdc = 15, Vn1 = 0, Vn2 = 1):
     fill.write('.print dc i(V1)\n')
     fill.write('.end\n')
     fill.close()
+#%%
+    
+def getRead(fileCheck):
+    infoDic = {}
+    with open(fileCheck,'r') as fild:
+        for ii in fild.readlines():
+            if ii[0] == 'p':
+                lin = ii.split('|')
+                fl1 = lin[0]; fl2 = lin[-1]
+                fl1 = fl1.replace('rad = ','')
+                fl1 = fl1.split()
+                keyN = fl1[0]+fl1[3]
+                fl2 = fl2.replace('neck radius','').replace('neck length','').replace('=','').split()
+                props = [eval(fl2[0]),eval(fl2[1])]
+                infoDic[keyN] = props
+    return infoDic
+
+def dicExtract(xminA):
+    outt = []
+    for ii in xminA:
+        outt.append(nodeDic[ii])
+    return outt
+
+def getOpt(listO,op,giv=4):
+    opL = []
+    if op==0:
+        optV = min(listO)
+        for ii in range(giv):
+            optV = optV + ii
+            opL += list(np.array(iilist)[np.where(np.array(listO)==optV)])
+    elif op==1:
+        optV = max(listO)
+        for ii in range(giv):
+            optV = optV - ii
+            opL += list(np.array(iilist)[np.where(np.array(listO)==optV)])
+    return opL        
 #%%
 
 Rbulk = 1.72e-6 #ohms-cm, resistivity of bulk copper
@@ -468,6 +517,12 @@ nodeList = [[],[],[]]
 starttime = time.time()
 
 fileName = "fullT"+str(ai)+"SN"+str(SNo)+".dat" 
+
+fileCheck = "fullT"+str(ai)+"Out.log"
+fileBool = isfile('./'+fileCheck)
+
+if fileBool:
+    neckInfoDic = getRead(fileCheck)
 
 bnf = open(fileName,"rb")
 fcont = bnf.read()
@@ -515,7 +570,7 @@ plotEta = False
 plotCheckSpheres = False
 overlapAnalysis = True
 plotOvlp = False
-neckPlot = False
+neckPlot = True#False
 
 for p1 in range(noparts):
     t1 = Ed[p1] >= etaCut
@@ -578,88 +633,118 @@ for p1 in range(noparts):
                         rad1, cen1 = props(x[1],y[1],z[1])#,True)
                         propsDic[sp]=[[rad1,cen1],[min(x[1]),max(x[1]),min(y[1]),max(y[1])]]
                     
-                    titleName, ovlpA = inContact(x,y,z,v,[rad0,rad1],[cen0,cen1],False,False,p1=p1,p2=p2)
-                    if titleName:
-                        cenD = np.sqrt(sum((cen0 - cen1)**2))
-    
-                        #unpack ovlp
-                        #ovlp,radN,cenN,finPos,overlap01 = ovlpA
-                        ovlp, radN, overlap01, lenN, neckAll = ovlpA
-                        
+                    if fileBool:
                         sp1 = str(p1); sp2 = str(p2)
-                        if sp1 not in nodeDic:
-                            nodeDic[sp1] = nodectr
-                            nodectr += 1
-                        if sp2 not in nodeDic:
-                            nodeDic[sp2] = nodectr
-                            nodectr += 1
-                        nodeList[0].append(nodeDic[sp1]) 
-                        nodeList[1].append(nodeDic[sp2])
-                        nodeList[2].append(calcRes(rad0,rad1,radN,lenN))
-                        
-                        if neckPlot:
-                            plotNeck(ovlp,'b4Narrowed'+str(p1)+'_and_'+str(p2)+'.png')
-                            #plotNeck(finPos,'lim'+str(etaCut)+'_NarrowedNeck'+str(p1)+'_and_'+str(p2)+'.png')
-                            plotNeck(neckAll,'lim'+str(etaCut)+'_NarrowedNeck'+str(p1)+'_and_'+str(p2)+'.png')
-                        
-                    if plotEta:
-                        fig = plt.figure()
-                        ax = Axes3D(fig)
-                
-                        ax.set_xlim([0,ysize])
-                        ax.set_ylim([0,ysize])
-                        ax.set_zlim([0,ysize])
-                
-                        for ii in range(2):
-                            ax.scatter(x[ii],y[ii],z[ii],s=100*v[ii],c= colfc,marker='o',edgecolor = colbd)
-                        
-                        ax.view_init(elev=40,azim=50)
-                
-                        ax.set_title(titleName)
-            
-                        print(p1,"+",p2)
-                        fig.savefig("Part%d_and_%d.png" %(p1,p2))
-                        plt.close()  
+                        keyN = 'p'+sp1+'p'+sp2
+                        if keyN in neckInfoDic:
+                            radN,lenN = neckInfoDic[keyN]
+                            cenD = np.sqrt(sum((cen0 - cen1)**2))
+                            if sp1 not in nodeDic:
+                                nodeDic[sp1] = nodectr
+                                nodectr += 1
+                            if sp2 not in nodeDic:
+                                nodeDic[sp2] = nodectr
+                                nodectr += 1
+                            nodeList[0].append(nodeDic[sp1]) 
+                            nodeList[1].append(nodeDic[sp2])
+                            nodeList[2].append(calcRes(rad0,rad1,radN,lenN))
+                    else:
+                        titleName, ovlpA = inContact(x,y,z,v,[rad0,rad1],[cen0,cen1],False,False,p1=p1,p2=p2)
+                        if titleName:
+                            cenD = np.sqrt(sum((cen0 - cen1)**2))
+        
+                            #unpack ovlp
+                            #ovlp,radN,cenN,finPos,overlap01 = ovlpA
+                            ovlp, radN, overlap01, lenN, neckAll = ovlpA
+                            
+                            sp1 = str(p1); sp2 = str(p2)
+                            if sp1 not in nodeDic:
+                                nodeDic[sp1] = nodectr
+                                nodectr += 1
+                            if sp2 not in nodeDic:
+                                nodeDic[sp2] = nodectr
+                                nodectr += 1
+                            nodeList[0].append(nodeDic[sp1]) 
+                            nodeList[1].append(nodeDic[sp2])
+                            nodeList[2].append(calcRes(rad0,rad1,radN,lenN))
+                            
+                            if neckPlot:
+                                plotNeck(ovlp,'b4Narrowed'+str(p1)+'_and_'+str(p2)+'.png')
+                                #plotNeck(finPos,'lim'+str(etaCut)+'_NarrowedNeck'+str(p1)+'_and_'+str(p2)+'.png')
+                                plotNeck(neckAll,'lim'+str(etaCut)+'_NarrowedNeck'+str(p1)+'_and_'+str(p2)+'.png')
+                            
+                        if plotEta:
+                            fig = plt.figure()
+                            ax = Axes3D(fig)
                     
-                    if plotOvlp:
-                        fig = plt.figure()
-                        ax = Axes3D(fig)
+                            ax.set_xlim([0,ysize])
+                            ax.set_ylim([0,ysize])
+                            ax.set_zlim([0,ysize])
+                    
+                            for ii in range(2):
+                                ax.scatter(x[ii],y[ii],z[ii],s=100*v[ii],c= colfc,marker='o',edgecolor = colbd)
+                            
+                            ax.view_init(elev=40,azim=50)
+                    
+                            ax.set_title(titleName)
                 
-                        ax.set_xlim([0,ysize])
-                        ax.set_ylim([0,ysize])
-                        ax.set_zlim([0,ysize])
+                            print(p1,"+",p2)
+                            fig.savefig("Part%d_and_%d.png" %(p1,p2))
+                            plt.close()  
                         
-                        ovlp = sortPlot(ovlp)
-                        ax.scatter(ovlp[0],ovlp[1],ovlp[2],s=100*np.array(ovlp[3]),c= colfc,marker='o',edgecolor = colbd)
-                        
-                        ax.view_init(elev=40,azim=50)
-                        titleName = "Overlap "+ titleName
-                        ax.set_title(titleName)
-            
-                        print(p1,"+",p2,"Overlap")
-                        fig.savefig("2LROverlapPart%d_and_%d.png" %(p1,p2))
-                        plt.close()                     
+                        if plotOvlp:
+                            fig = plt.figure()
+                            ax = Axes3D(fig)
+                    
+                            ax.set_xlim([0,ysize])
+                            ax.set_ylim([0,ysize])
+                            ax.set_zlim([0,ysize])
+                            
+                            ovlp = sortPlot(ovlp)
+                            ax.scatter(ovlp[0],ovlp[1],ovlp[2],s=100*np.array(ovlp[3]),c= colfc,marker='o',edgecolor = colbd)
+                            
+                            ax.view_init(elev=40,azim=50)
+                            titleName = "Overlap "+ titleName
+                            ax.set_title(titleName)
+                
+                            print(p1,"+",p2,"Overlap")
+                            fig.savefig("2LROverlapPart%d_and_%d.png" %(p1,p2))
+                            plt.close()                     
 
 minX = [0,100]; minY = [0,100]
 maxX = [0,0]; maxY = [0,0]
+listX = [[],[]]
+listY = [[],[]]
+iilist = []
 
 for ii,ij in propsDic.items():
     if ii in nodeDic:
         #using mins and maxs
-        #xmin,xmax,ymin,ymax = ij[1]
+        xmin,xmax,ymin,ymax = ij[1]
+        listX[0].append(xmin)
+        listX[1].append(xmax)
+        listY[0].append(ymin)
+        listY[1].append(ymax)
+        iilist.append(ii)
+        '''
         xval,yval = ij[0][1][0],ij[0][1][1]
         xmin,xmax,ymin,ymax = xval,xval,yval,yval
         if xmin < minX[1]: minX[0] = ii; minX[1] = xmin
         if ymin < minY[1]: minY[0] = ii; minY[1] = ymin    
         if xmax > maxX[1]: maxX[0] = ii; maxX[1] = xmax
         if ymax > maxY[1]: maxY[0] = ii; maxY[1] = ymax 
+        '''
+        
+xminA = getOpt(listX[0],0)
+xmaxA = getOpt(listX[1],1)
+yminA = getOpt(listY[0],0)
+ymaxA = getOpt(listY[1],1) 
 
-xbdsN = [nodeDic[minX[0]],nodeDic[maxX[0]]]
-ybdsN = [nodeDic[minY[0]],nodeDic[maxY[0]]]
+xbdsN = [dicExtract(xminA),dicExtract(xmaxA)]#[nodeDic[minX[0]],nodeDic[maxX[0]]]
+ybdsN = [dicExtract(yminA),dicExtract(ymaxA)]#[nodeDic[minY[0]],nodeDic[maxY[0]]]
 
 if nodeList[0]:
-    writeNodeList(nodeList,'nodeFileX.cir',Vn1 = xbdsN[0],Vn2 = xbdsN[1])
-    writeNodeList(nodeList,'nodeFileY.cir',Vn1 = ybdsN[0],Vn2 = ybdsN[1])
+    writeNodeList(nodeList,'nodeFile.txt',xbdsN,ybdsN)
     
 print('Time to end:')
 print(time.time()-midtime,'s')                    

@@ -60,6 +60,8 @@ Electrical conductivity measures are done on the simulation beds. *conductivityC
 
 sudo apt-get install -y ngspice
 
+Also includes rhoAnalysis.py to calculate density from the full data files in order to plot against electrical Conductivity and other variables of interest
+
 # Run Procedure Summarized
 ## Single Layer 1by1 beds
 * ./bashModGen (feedbash must be in directory) 

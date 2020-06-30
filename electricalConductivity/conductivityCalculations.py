@@ -432,11 +432,18 @@ def calcRes(r0,r1,rN,L):
     return res*L*Sconv/A 
 
 #%%
-def writeNodeList(nodeList,fileName,Vn1,Vn2,Vdc = 15):
+def writeVolList(maxV,fileName,Vdc = 15):
+    filv = open(fileName,'w')
+    for ix in range(maxV+1):
+        for iy in range(ix+1,maxV+1):
+            filv.write('V1 %d %d dc %d\n' %(ix,iy,Vdc))
+    filv.close()
+    
+def writeNodeList(nodeList,fileName,Vn1,Vn2,Vdc = 15,vfileName = 'VoltageFile.txt'):
     
     #fill.write('Effective Resistance Circuit\n')
 
-    filv = open('VoltageFile.txt','w')
+    filv = open(vfileName,'w')
     for ix in Vn1[0]:
         for iy in Vn1[1]:
             filv.write('V1 %d %d dc %d\n' %(ix,iy,Vdc))
@@ -744,7 +751,10 @@ xbdsN = [dicExtract(xminA),dicExtract(xmaxA)]#[nodeDic[minX[0]],nodeDic[maxX[0]]
 ybdsN = [dicExtract(yminA),dicExtract(ymaxA)]#[nodeDic[minY[0]],nodeDic[maxY[0]]]
 
 if nodeList[0]:
-    writeNodeList(nodeList,'nodeFile.txt',xbdsN,ybdsN)
+    writeNodeList(nodeList,'nodeFile.txt',xbdsN,ybdsN,vfileName = 'VoltageFileXY.txt')
+    maxV = max(max(nodeList[0]),max(nodeList[1]))
+    writeVolList(maxV,'VoltageFile.txt')
     
 print('Time to end:')
 print(time.time()-midtime,'s')                    
+

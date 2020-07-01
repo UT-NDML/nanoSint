@@ -577,7 +577,7 @@ plotEta = False
 plotCheckSpheres = False
 overlapAnalysis = True
 plotOvlp = False
-neckPlot = True#False
+neckPlot = False
 
 for p1 in range(noparts):
     t1 = Ed[p1] >= etaCut

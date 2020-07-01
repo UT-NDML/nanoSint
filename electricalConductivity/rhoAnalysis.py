@@ -78,8 +78,10 @@ for ai in AIlist:
     
     str2write = str(ai) + '\t'
     if ai == 0:
+        idd = Vd > 0.1
+        Xd = Xd[idd]; Yd = Yd[idd]; Zd = Zd[idd]; Vd = Vd[idd]
         init_volume = (max(Xd) - min(Xd))*(max(Yd) - min(Yd))*(max(Zd) - min(Zd))
-        init_rho_ratio = sum(Vd>0.1)/init_volume
+        init_rho_ratio = sum(idd)/init_volume
         sumrho_init = sum(vbox)
         init_density = bulkR*init_rho_ratio
         str2write += str(init_density) + '\n'
